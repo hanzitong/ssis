@@ -11,12 +11,13 @@
 #include <tf2_ros/buffer.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/pose.hpp>
+// #include <visualization_msgs/msg/marker.hpp>
+
 #include <tether_msgs/msg/tether_compare.hpp>
 #include <smart_tether/tether_opt.hpp>
 #include <smart_tether/multi_tether_opt.hpp>
 #include <smart_tether/c_bounds.hpp>
-
-// #include <visualization_msgs/msg/marker.hpp>
+#include <ssis/ssis_tools.hpp>
 
 
 using namespace std::chrono_literals;
@@ -27,29 +28,6 @@ using namespace std::chrono_literals;
 #define V_MARGIN 20.
 
 
-namespace compare_func
-{
-double select_min(const std::vector<double> input){
-    double min = input[0];
-    int method = 1; // 1:tether1, 2:tether12, 3:tether123
-
-    for(int i=1; i<input.size(); i++){
-        if(min >= input[i]){// change min
-           min = input[i];
-           method = i + 1;
-        }else{
-            std::cout << "no compare !!!!!!!!!!!" << std::endl;
-        }
-    }
-
-    for(int j=0; j<input.size(); j++){
-        if(std::isnan(input[j])){return -1;}
-    }
-
-    // return min;
-    return method;
-}
-}
 
 class MinTuav1tether : public rclcpp::Node{
 public:

@@ -16,6 +16,7 @@ find_package(tether_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 include_directories(
+  include
   ${smart_tether_INCLUDE_DIRS}
 )
 
