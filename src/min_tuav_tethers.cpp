@@ -101,12 +101,18 @@ private:
         std::vector<double> c_lower_12 = {c_lower_1, c_lower_2};
         std::vector<double> c_lower_123 = {c_lower_1, c_lower_2, c_lower_3};
 
+        // for plotting 
+        tf2::Vector3 tuav1_1tether = {0., 0., 0.};     // 1
+        tf2::Vector3 tuav1_2tethers = {0., 0., 0.};     // 2
+        tf2::Vector3 tuav2_2tethers = {0., 0., 0.};     // 2
+        tf2::Vector3 tuav1_3tethers = {0., 0., 0.};     // 3
+        tf2::Vector3 tuav2_3tethers = {0., 0., 0.};     // 3
+        tf2::Vector3 tuav3_3tethers = {0., 0., 0.};     // 3
+
         // calc tether tension
-        msg_pub.tuav1_sum_norm = smart_tether::optimize_1tether(h_1, v_1, 2. * RHO_VALUE, c_opt1_);
-        // msg_pub.tuav12_sum_norm = multi_tether_opt::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1);
-        // msg_pub.tuav123_sum_norm = multi_tether_opt::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1);
-        msg_pub.tuav12_sum_norm = smart_tether::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1);
-        msg_pub.tuav123_sum_norm = smart_tether::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1);
+        msg_pub.tuav1_sum_norm = smart_tether::optimize_1tether(h_1, v_1, 2. * RHO_VALUE, c_opt1_, tuav1_1tether);
+        msg_pub.tuav12_sum_norm = smart_tether::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1, tuav1_2tethers, tuav2_2tethers);
+        msg_pub.tuav123_sum_norm = smart_tether::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1, tuav1_3tethes, tuav2_3tethers, tuav3_3tethers);
 
         // compare and put result to msg
         // std::vector<double> compare_tuav12 = {msg_pub.tuav1_sum_norm, msg_pub.tuav12_sum_norm};
@@ -118,6 +124,12 @@ private:
         msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
         msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
         msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
+        msg_pub.tuav1_1tether = tuav1_1tether;
+        msg_pub.tuav1_2tether = tuav1_2tether;
+        msg_pub.tuav2_2tether = tuav2_2tether;
+        msg_pub.tuav1_3tether = tuav1_3tether;
+        msg_pub.tuav2_3tether = tuav2_3tether;
+        msg_pub.tuav3_3tether = tuav3_3tether;
 
         RCLCPP_INFO(this->get_logger(),"q2to1-> x:%f, y:%f, z:%f, w:%f", q2to1.x(), q2to1.y(), q2to1.z(), q2to1.w());
         publisher_->publish(msg_pub);
