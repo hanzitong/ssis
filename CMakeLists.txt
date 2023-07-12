@@ -14,6 +14,8 @@ find_package(tf2_ros REQUIRED)
 find_package(smart_tether REQUIRED)
 find_package(tether_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+
 
 include_directories(
   include
@@ -27,29 +29,29 @@ ament_target_dependencies(
   geometry_msgs
 )
 
-add_executable(uav1_frame_publisher src/uav1_frame_publisher.cpp)
-ament_target_dependencies(uav1_frame_publisher
-  geometry_msgs
-  rclcpp
-  tf2
-  tf2_ros
-)
+# add_executable(uav1_frame_publisher src/uav1_frame_publisher.cpp)
+# ament_target_dependencies(uav1_frame_publisher
+#   geometry_msgs
+#   rclcpp
+#   tf2
+#   tf2_ros
+# )
 
-add_executable(uav2_frame_publisher src/uav2_frame_publisher.cpp)
-ament_target_dependencies(uav2_frame_publisher
-  geometry_msgs
-  rclcpp
-  tf2
-  tf2_ros
-)
+# add_executable(uav2_frame_publisher src/uav2_frame_publisher.cpp)
+# ament_target_dependencies(uav2_frame_publisher
+#   geometry_msgs
+#   rclcpp
+#   tf2
+#   tf2_ros
+# )
 
-add_executable(uav3_frame_publisher src/uav3_frame_publisher.cpp)
-ament_target_dependencies(uav3_frame_publisher
-  geometry_msgs
-  rclcpp
-  tf2
-  tf2_ros
-)
+# add_executable(uav3_frame_publisher src/uav3_frame_publisher.cpp)
+# ament_target_dependencies(uav3_frame_publisher
+#   geometry_msgs
+#   rclcpp
+#   tf2
+#   tf2_ros
+# )
 
 add_executable(uav_frame_publisher_3tethers src/uav_frame_publisher_3tethers.cpp)
 ament_target_dependencies(uav_frame_publisher_3tethers
@@ -77,11 +79,21 @@ target_link_libraries(min_tuav_tethers nlopt)
 #   $<INSTALL_INTERFACE:include>
 # )
 
-add_executable(visualization_node src/visualization_node)
-ament_target_dependencies(visualization_node
+add_executable(tension_visualization_node src/tension_visualization_node.cpp)
+ament_target_dependencies(tension_visualization_node
   rclcpp
   geometry_msgs
   visualization_msgs
+  tether_msgs
+  tf2
+)
+
+add_executable(tether_visualization_node src/tether_visualization_node.cpp)
+ament_target_dependencies(tether_visualization_node
+  rclcpp
+  geometry_msgs
+  visualization_msgs
+  nav_msgs
   tether_msgs
   tf2
 )
@@ -100,7 +112,7 @@ install(TARGETS
     uav3_frame_publisher
     uav_frame_publisher_3tethers
     min_tuav_tethers
-    visualization_node
+    tension_visualization_node
     get_result_node
     DESTINATION lib/${PROJECT_NAME}
 )

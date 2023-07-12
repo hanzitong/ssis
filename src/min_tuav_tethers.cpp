@@ -170,6 +170,8 @@ private:
         msg_pub.tuav1_3tether.header.frame_id = "uav1";
         msg_pub.tuav2_3tether.header.frame_id = "uav2";
         msg_pub.tuav3_3tether.header.frame_id = "uav3";
+        msg_pub.tuav12_sum_vector.header.frame_id = "uav1";
+        msg_pub.tuav123_sum_vector.header.frame_id = "uav1";
 
 
         RCLCPP_INFO(this->get_logger(),"q2to1-> x:%f, y:%f, z:%f, w:%f", q2to1.x(), q2to1.y(), q2to1.z(), q2to1.w());

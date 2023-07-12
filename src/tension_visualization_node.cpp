@@ -170,7 +170,7 @@ private:
         msg_pub5.scale.y = VECTOR_SCALE_Y;
         msg_pub5.scale.z = VECTOR_SCALE_Z;
         msg_pub5.color.r = 0.;
-        msg_pub5.color.g = 0.;
+        msg_pub5.color.g = 1.;
         msg_pub5.color.b = 1.;
         msg_pub5.color.a = VECTOR_COLOR_A;
 
@@ -190,7 +190,7 @@ private:
         msg_pub6.scale.x = VECTOR_SCALE_X;
         msg_pub6.scale.y = VECTOR_SCALE_Y;
         msg_pub6.scale.z = VECTOR_SCALE_Z;
-        msg_pub6.color.r = 0.;
+        msg_pub6.color.r = 1.;
         msg_pub6.color.g = 0.;
         msg_pub6.color.b = 1.;
         msg_pub6.color.a = VECTOR_COLOR_A;
@@ -198,8 +198,8 @@ private:
 
         visualization_msgs::msg::Marker msg_pub7;
         msg_pub7.header.frame_id = msg_sub.tuav12_sum_vector.header.frame_id;
-        msg_pub7.ns = "2tether";
-        msg_pub7.id = 5;
+        msg_pub7.ns = "sum";
+        msg_pub7.id = 7;
         msg_pub7.type = visualization_msgs::msg::Marker::ARROW;
         msg_pub7.action = visualization_msgs::msg::Marker::ADD;
         msg_pub7.points.resize(2);
@@ -219,8 +219,8 @@ private:
 
         visualization_msgs::msg::Marker msg_pub8;
         msg_pub8.header.frame_id = msg_sub.tuav123_sum_vector.header.frame_id;
-        msg_pub8.ns = "3tether";
-        msg_pub8.id = 5;
+        msg_pub8.ns = "sum";
+        msg_pub8.id = 8;
         msg_pub8.type = visualization_msgs::msg::Marker::ARROW;
         msg_pub8.action = visualization_msgs::msg::Marker::ADD;
         msg_pub8.points.resize(2);
@@ -260,7 +260,6 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher6_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher7_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher8_;
-
 
     rclcpp::Subscription<tether_msgs::msg::TetherCompare>::SharedPtr subscription_;
 
