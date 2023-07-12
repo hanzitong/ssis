@@ -7,14 +7,16 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(smart_tether REQUIRED)
-find_package(tether_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+
+find_package(smart_tether REQUIRED)
+find_package(tether_msgs REQUIRED)
+
 
 
 include_directories(
@@ -29,30 +31,6 @@ ament_target_dependencies(
   geometry_msgs
 )
 
-# add_executable(uav1_frame_publisher src/uav1_frame_publisher.cpp)
-# ament_target_dependencies(uav1_frame_publisher
-#   geometry_msgs
-#   rclcpp
-#   tf2
-#   tf2_ros
-# )
-
-# add_executable(uav2_frame_publisher src/uav2_frame_publisher.cpp)
-# ament_target_dependencies(uav2_frame_publisher
-#   geometry_msgs
-#   rclcpp
-#   tf2
-#   tf2_ros
-# )
-
-# add_executable(uav3_frame_publisher src/uav3_frame_publisher.cpp)
-# ament_target_dependencies(uav3_frame_publisher
-#   geometry_msgs
-#   rclcpp
-#   tf2
-#   tf2_ros
-# )
-
 add_executable(uav_frame_publisher_3tethers src/uav_frame_publisher_3tethers.cpp)
 ament_target_dependencies(uav_frame_publisher_3tethers
   geometry_msgs
@@ -60,7 +38,6 @@ ament_target_dependencies(uav_frame_publisher_3tethers
   tf2
   tf2_ros
 )
-
 
 add_executable(min_tuav_tethers src/min_tuav_tethers.cpp)
 ament_target_dependencies(min_tuav_tethers
@@ -82,20 +59,20 @@ target_link_libraries(min_tuav_tethers nlopt)
 add_executable(tension_visualization_node src/tension_visualization_node.cpp)
 ament_target_dependencies(tension_visualization_node
   rclcpp
-  geometry_msgs
+  tf2
+  # geometry_msgs
   visualization_msgs
   tether_msgs
-  tf2
 )
 
 add_executable(tether_visualization_node src/tether_visualization_node.cpp)
 ament_target_dependencies(tether_visualization_node
   rclcpp
-  geometry_msgs
-  visualization_msgs
+  tf2
+  # geometry_msgs
+  # visualization_msgs
   nav_msgs
   tether_msgs
-  tf2
 )
 
 add_executable(get_result_node src/get_result_node)
@@ -107,9 +84,6 @@ ament_target_dependencies(get_result_node
 
 install(TARGETS
     uav_position_publisher
-    # uav1_frame_publisher
-    # uav2_frame_publisher
-    # uav3_frame_publisher
     uav_frame_publisher_3tethers
     min_tuav_tethers
     tension_visualization_node

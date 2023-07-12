@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 
 #include <tether_msgs/msg/tether_compare.hpp>
@@ -26,6 +25,10 @@ class TensionVisualizationNode : public rclcpp::Node
 public:
     TensionVisualizationNode(): Node("minimal_subscriber")
     {
+        subscription_ = this->create_subscription<tether_msgs::msg::TetherCompare>(
+                            "optimize_results", 10, std::bind(&TensionVisualizationNode::callback_subscribe_tether, this, std::placeholders::_1)
+                        );
+
         publisher_uav_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_uav", 10);
         publisher1_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1_1tether", 10);
         publisher2_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1_2tether", 10);
@@ -37,9 +40,6 @@ public:
         publisher7_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav_sum_2tether", 10);
         publisher8_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav_sum_3tether", 10);
 
-        subscription_ = this->create_subscription<tether_msgs::msg::TetherCompare>(
-                            "optimize_results", 10, std::bind(&TensionVisualizationNode::callback_subscribe_tether, this, std::placeholders::_1)
-                        );
     }
 
 private:
@@ -251,6 +251,8 @@ private:
 
     }
 
+    rclcpp::Subscription<tether_msgs::msg::TetherCompare>::SharedPtr subscription_;
+
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher_uav_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher1_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher2_;
@@ -260,8 +262,6 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher6_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher7_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher8_;
-
-    rclcpp::Subscription<tether_msgs::msg::TetherCompare>::SharedPtr subscription_;
 
 };
 
