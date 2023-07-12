@@ -4,10 +4,10 @@ from launch_ros.actions import Node
 """ ver2 position """
 L = 50.
 winch1_pos = [0., 0., 0.]       # x,y,z
-winch2_pos = [L, 0., 0.]      # x,y,z   atteru???
+winch2_pos = [L, 0., 0.]      # x,y,z
 winch3_pos = [L/2., L, 0.]      # x,y,z
-winch4_pos = [0., L, 0.]      # x,y,z
-winch5_pos = [L, L, 0.]      # x,y,z
+# winch4_pos = [0., L, 0.]      # x,y,z
+# winch5_pos = [L, L, 0.]      # x,y,z
 
 
 def generate_launch_description():
@@ -42,6 +42,7 @@ def generate_launch_description():
                 '--frame-id', 'world', '--child-frame-id', 'winch3'
             ]
         ),
+
         Node(
             package='ssis',
             executable='uav_position_publisher',
@@ -49,24 +50,21 @@ def generate_launch_description():
         ),
         Node(
             package='ssis',
-            executable='uav1_frame_publisher',
-            name='pub_uav1_frame',
+            executable='uav_frame_publisher_3tethers',
+            name='pub_uav_frame_3tethers',
         ),
-        Node(
-            package='ssis',
-            executable='uav2_frame_publisher',
-            name='pub_uav2_frame',
-        ),
-        Node(
-            package='ssis',
-            executable='uav3_frame_publisher',
-            name='pub_uav3_frame',
-        ),
+
         Node(
             package='ssis',
             executable='min_tuav_tethers',
             name='min_tuav_tethers',
         ),
+        Node(
+            package='ssis',
+            executable='visualization_node',
+            name='visualization_node',
+        ),
+
         Node(
             package='ssis',
             executable='get_result_node',

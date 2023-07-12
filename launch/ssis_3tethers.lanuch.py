@@ -54,11 +54,16 @@ def generate_launch_description():
             name='pub_uav_frame_3tethers',
         ),
 
-        # Node(
-        #     package='ssis',
-        #     executable='min_tuav_tethers',
-        #     name='min_tuav_tethers',
-        # ),
+        Node(
+            package='ssis',
+            executable='min_tuav_tethers',
+            name='min_tuav_tethers',
+        ),
+        Node(
+            package='ssis',
+            executable='visualization_node',
+            name='visualization_node',
+        ),
         # Node(
         #     package='ssis',
         #     executable='get_result_node',

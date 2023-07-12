@@ -7,8 +7,11 @@
 namespace compare_func
 {
 
+// use variadic template in the future
 double select_min(const std::vector<double> input){
-    double min = input[0];
+    // argument input contains tension_uav sum-> [0]:tether1, [1]:tether1&2, [2]:tether1&2&3
+
+    double min = input[0];  // set initial result tether1, which means colum 0.
     int method = 1; // 1:tether1, 2:tether12, 3:tether123
 
     for(int i=1; i<input.size(); i++){
@@ -31,4 +34,3 @@ double select_min(const std::vector<double> input){
 }   // namespace compare_func
 
 #endif
-

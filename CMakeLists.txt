@@ -64,7 +64,6 @@ add_executable(min_tuav_tethers src/min_tuav_tethers.cpp)
 ament_target_dependencies(min_tuav_tethers
   smart_tether
   geometry_msgs
-  # visualization_msgs
   tether_msgs
   rclcpp
   tf2
@@ -77,6 +76,15 @@ target_link_libraries(min_tuav_tethers nlopt)
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>
 # )
+
+add_executable(visualization_node src/visualization_node)
+ament_target_dependencies(visualization_node
+  rclcpp
+  geometry_msgs
+  visualization_msgs
+  tether_msgs
+  tf2
+)
 
 add_executable(get_result_node src/get_result_node)
 ament_target_dependencies(get_result_node
@@ -92,6 +100,7 @@ install(TARGETS
     uav3_frame_publisher
     uav_frame_publisher_3tethers
     min_tuav_tethers
+    visualization_node
     get_result_node
     DESTINATION lib/${PROJECT_NAME}
 )

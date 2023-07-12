@@ -15,7 +15,7 @@ public:
     UavPositionPublisher() : Node("uav_position_publisher"), x(0.), y(0.), L(50.), interval(10.){
         publisher_ = this->create_publisher<geometry_msgs::msg::Pose>("winch1/uav_pose", 10);
         // timer_ = this->create_wall_timer(500ms, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
-        timer_ = this->create_wall_timer(1s, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
+        timer_ = this->create_wall_timer(2s, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
     }
 private:
     void callback_pub_uav_posision(){
