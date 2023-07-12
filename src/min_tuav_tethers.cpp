@@ -47,6 +47,7 @@ private:
         geometry_msgs::msg::TransformStamped t1;
         geometry_msgs::msg::TransformStamped t2;
         geometry_msgs::msg::TransformStamped t3;
+
         tether_msgs::msg::TetherCompare msg_pub;
 
         try{
@@ -77,11 +78,17 @@ private:
         double h_1 = std::sqrt(t1.transform.translation.x * t1.transform.translation.x + t1.transform.translation.y * t1.transform.translation.y);
         double h_2 = std::sqrt(t2.transform.translation.x * t2.transform.translation.x + t2.transform.translation.y * t2.transform.translation.y);
         double h_3 = std::sqrt(t3.transform.translation.x * t3.transform.translation.x + t3.transform.translation.y * t3.transform.translation.y);
-        std::vector<double> h_12 = {h_1, h_2};
-        std::vector<double> h_123 = {h_1, h_2, h_3};
         double v_1 = t1.transform.translation.z;
         double v_2 = t2.transform.translation.z;
         double v_3 = t3.transform.translation.z;
+        msg_pub.h1 = h_1;
+        msg_pub.h2 = h_2;
+        msg_pub.h3 = h_3;
+        msg_pub.v1 = v_1;
+        msg_pub.v2 = v_2;
+        msg_pub.v3 = v_3;
+        std::vector<double> h_12 = {h_1, h_2};
+        std::vector<double> h_123 = {h_1, h_2, h_3};
         std::vector<double> v_12= {v_1, v_2};
         std::vector<double> v_123 = {v_1, v_2, v_3};
         std::vector<double> rho_12 = {RHO_VALUE, RHO_VALUE};
@@ -125,9 +132,9 @@ private:
 
 
         // put each data to msg(tether_msgs/msg/TetherCompare.msg)
-        msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
-        msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
-        msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
+        // msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
+        // msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
+        // msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
         for(int i=0; i<3; i++){
             if(i==0){
                 msg_pub.tuav1_1tether.vector.x = tuav1_1tether[i];
@@ -139,6 +146,10 @@ private:
                 msg_pub.tuav12_sum_vector.vector.x = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.x = tuav_sum_3tethers[i];
 
+                msg_pub.c1_1tether = c_opt1_[i];
+                msg_pub.c1_2tether = c_opt12_[i];
+                msg_pub.c1_3tether = c_opt123_[i];
+
             }else if(i==1){                                   
                 msg_pub.tuav1_1tether.vector.y = tuav1_1tether[i];
                 msg_pub.tuav1_2tether.vector.y = tuav1_2tethers[i];
@@ -148,6 +159,9 @@ private:
                 msg_pub.tuav3_3tether.vector.y = tuav3_3tethers[i];
                 msg_pub.tuav12_sum_vector.vector.y = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.y = tuav_sum_3tethers[i];
+
+                msg_pub.c2_2tether = c_opt12_[i];
+                msg_pub.c2_3tether = c_opt123_[i];
             
             }else if(i==2){                                   
                 msg_pub.tuav1_1tether.vector.z = tuav1_1tether[i];
@@ -158,6 +172,8 @@ private:
                 msg_pub.tuav3_3tether.vector.z = tuav3_3tethers[i];
                 msg_pub.tuav12_sum_vector.vector.z = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.z = tuav_sum_3tethers[i];
+
+                msg_pub.c3_3tether = c_opt123_[i];
             
             }else{
                 RCLCPP_INFO(this->get_logger(),"error");

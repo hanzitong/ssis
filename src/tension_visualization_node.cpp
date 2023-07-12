@@ -170,7 +170,7 @@ private:
         msg_pub5.scale.y = VECTOR_SCALE_Y;
         msg_pub5.scale.z = VECTOR_SCALE_Z;
         msg_pub5.color.r = 0.;
-        msg_pub5.color.g = 1.;
+        msg_pub5.color.g = 0.;
         msg_pub5.color.b = 1.;
         msg_pub5.color.a = VECTOR_COLOR_A;
 
@@ -190,7 +190,7 @@ private:
         msg_pub6.scale.x = VECTOR_SCALE_X;
         msg_pub6.scale.y = VECTOR_SCALE_Y;
         msg_pub6.scale.z = VECTOR_SCALE_Z;
-        msg_pub6.color.r = 1.;
+        msg_pub6.color.r = 0.;
         msg_pub6.color.g = 0.;
         msg_pub6.color.b = 1.;
         msg_pub6.color.a = VECTOR_COLOR_A;
@@ -212,7 +212,7 @@ private:
         msg_pub7.scale.x = VECTOR_SCALE_X;
         msg_pub7.scale.y = VECTOR_SCALE_Y;
         msg_pub7.scale.z = VECTOR_SCALE_Z;
-        msg_pub7.color.r = 0.;
+        msg_pub7.color.r = 1.;
         msg_pub7.color.g = 1.;
         msg_pub7.color.b = 0.;
         msg_pub7.color.a = VECTOR_COLOR_A;
@@ -235,7 +235,7 @@ private:
         msg_pub8.scale.z = VECTOR_SCALE_Z;
         msg_pub8.color.r = 1.;
         msg_pub8.color.g = 0.;
-        msg_pub8.color.b = 0.;
+        msg_pub8.color.b = 1.;
         msg_pub8.color.a = VECTOR_COLOR_A;
 
 

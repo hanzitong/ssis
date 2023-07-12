@@ -61,8 +61,13 @@ def generate_launch_description():
         ),
         Node(
             package='ssis',
-            executable='visualization_node',
-            name='visualization_node',
+            executable='tension_visualization_node',
+            name='tension_visualization_node',
+        ),
+        Node(
+            package='ssis',
+            executable='tether_visualization_node',
+            name='tether_visualization_node',
         ),
 
         Node(

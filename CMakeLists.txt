@@ -60,7 +60,6 @@ add_executable(tension_visualization_node src/tension_visualization_node.cpp)
 ament_target_dependencies(tension_visualization_node
   rclcpp
   tf2
-  # geometry_msgs
   visualization_msgs
   tether_msgs
 )
@@ -69,9 +68,9 @@ add_executable(tether_visualization_node src/tether_visualization_node.cpp)
 ament_target_dependencies(tether_visualization_node
   rclcpp
   tf2
-  # geometry_msgs
-  # visualization_msgs
+  geometry_msgs
   nav_msgs
+  smart_tether
   tether_msgs
 )
 
@@ -87,6 +86,7 @@ install(TARGETS
     uav_frame_publisher_3tethers
     min_tuav_tethers
     tension_visualization_node
+    tether_visualization_node
     get_result_node
     DESTINATION lib/${PROJECT_NAME}
 )
