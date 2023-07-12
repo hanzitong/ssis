@@ -1,7 +1,7 @@
 # ssis
 Surface Structure Inspection System
 
-# related packages
+# package dependencies
 1. smart_tether
 2. tether_msgs
 
