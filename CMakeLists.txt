@@ -107,9 +107,9 @@ ament_target_dependencies(get_result_node
 
 install(TARGETS
     uav_position_publisher
-    uav1_frame_publisher
-    uav2_frame_publisher
-    uav3_frame_publisher
+    # uav1_frame_publisher
+    # uav2_frame_publisher
+    # uav3_frame_publisher
     uav_frame_publisher_3tethers
     min_tuav_tethers
     tension_visualization_node

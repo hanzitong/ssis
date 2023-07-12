@@ -21,10 +21,10 @@ using namespace std::chrono_literals;
 #define VECTOR_COLOR_A 1.0
 
 
-class VisualizationNode : public rclcpp::Node
+class TensionVisualizationNode : public rclcpp::Node
 {
 public:
-    VisualizationNode(): Node("minimal_subscriber")
+    TensionVisualizationNode(): Node("minimal_subscriber")
     {
         publisher_uav_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_uav", 10);
         publisher1_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1_1tether", 10);
@@ -38,7 +38,7 @@ public:
         publisher8_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav_sum_3tether", 10);
 
         subscription_ = this->create_subscription<tether_msgs::msg::TetherCompare>(
-                            "optimize_results", 10, std::bind(&VisualizationNode::callback_subscribe_tether, this, std::placeholders::_1)
+                            "optimize_results", 10, std::bind(&TensionVisualizationNode::callback_subscribe_tether, this, std::placeholders::_1)
                         );
     }
 
@@ -269,7 +269,7 @@ private:
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<VisualizationNode>());
+    rclcpp::spin(std::make_shared<TensionVisualizationNode>());
     rclcpp::shutdown();
 
 
