@@ -42,7 +42,6 @@ def generate_launch_description():
                 '--frame-id', 'world', '--child-frame-id', 'winch3'
             ]
         ),
-
         Node(
             package='ssis',
             executable='uav_position_publisher',
@@ -69,13 +68,11 @@ def generate_launch_description():
             executable='tether_visualization_node',
             name='tether_visualization_node',
         ),
-
         Node(
             package='ssis',
             executable='get_result_node',
             name='get_result_node',
         ),
-
         Node(
             package='rviz2',
             executable='rviz2',

@@ -37,8 +37,9 @@ public:
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
         publisher_ = this->create_publisher<tether_msgs::msg::TetherCompare>("optimize_results", 1);
-        // tuav1_marker_publisher_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1", 1);
-        timer_ = this->create_wall_timer(0.5s, std::bind(&MinTuav1tether::on_timer, this));
+
+        // should use subscription ?????
+        timer_ = this->create_wall_timer(0.4s, std::bind(&MinTuav1tether::on_timer, this));
     }
 
 private:
@@ -47,32 +48,40 @@ private:
         geometry_msgs::msg::TransformStamped t1;
         geometry_msgs::msg::TransformStamped t2;
         geometry_msgs::msg::TransformStamped t3;
+        geometry_msgs::msg::TransformStamped t2to1;
+        geometry_msgs::msg::TransformStamped t3to1;
 
         tether_msgs::msg::TetherCompare msg_pub;
 
         try{
             t1 = tf_buffer_->lookupTransform("winch1", "uav1", tf2::TimePointZero);
-            t2 = tf_buffer_->lookupTransform("winch1", "uav2", tf2::TimePointZero);
-            t3 = tf_buffer_->lookupTransform("winch1", "uav3", tf2::TimePointZero);
+            t2 = tf_buffer_->lookupTransform("winch2", "uav1", tf2::TimePointZero);
+            t3 = tf_buffer_->lookupTransform("winch3", "uav1", tf2::TimePointZero);
+
+            t2to1 = tf_buffer_->lookupTransform("uav1", "uav2", tf2::TimePointZero);
+            t3to1 = tf_buffer_->lookupTransform("uav1", "uav3", tf2::TimePointZero);
+
         }catch(const tf2::TransformException & ex){
             RCLCPP_INFO(this->get_logger(), "Could not transform : %s", ex.what());
             return;
         }
 
-        // tf listener here. get quaternion & uav_position
-        t1 = tf_buffer_ -> lookupTransform("winch1", "uav1", tf2::TimePointZero);
-        t2 = tf_buffer_ -> lookupTransform("winch1", "uav2", tf2::TimePointZero);
-        t3 = tf_buffer_ -> lookupTransform("winch1", "uav3", tf2::TimePointZero);
+        // // debagging
+        // RCLCPP_INFO(this->get_logger(),"debag t1-> x:%f, y:%f, z:%f", t1.transform.translation.x,t1.transform.translation.y,t1.transform.translation.z); 
+        // RCLCPP_INFO(this->get_logger(),"debag t2-> x:%f, y:%f, z:%f", t2.transform.translation.x,t2.transform.translation.y,t2.transform.translation.z); 
+        // RCLCPP_INFO(this->get_logger(),"debag t3-> x:%f, y:%f, z:%f", t3.transform.translation.x,t3.transform.translation.y,t3.transform.translation.z); 
+        // RCLCPP_INFO(this->get_logger(),"debag t2to1-> x:%f, y:%f, z:%f", t2to1.transform.translation.x,t2to1.transform.translation.y,t2to1.transform.translation.z); 
+        // RCLCPP_INFO(this->get_logger(),"debag t3to1-> x:%f, y:%f, z:%f", t3to1.transform.translation.x,t3to1.transform.translation.y,t3to1.transform.translation.z); 
 
         // pass quaternion to tf2::Quaternion
-        q2to1.setX(t2.transform.rotation.x);
-        q2to1.setY(t2.transform.rotation.y);
-        q2to1.setZ(t2.transform.rotation.z);
-        q2to1.setW(t2.transform.rotation.w);
-        q3to1.setX(t3.transform.rotation.x);
-        q3to1.setY(t3.transform.rotation.y);
-        q3to1.setZ(t3.transform.rotation.z);
-        q3to1.setW(t3.transform.rotation.w);
+        q2to1.setX(t2to1.transform.rotation.x);
+        q2to1.setY(t2to1.transform.rotation.y);
+        q2to1.setZ(t2to1.transform.rotation.z);
+        q2to1.setW(t2to1.transform.rotation.w);
+        q3to1.setX(t3to1.transform.rotation.x);
+        q3to1.setY(t3to1.transform.rotation.y);
+        q3to1.setZ(t3to1.transform.rotation.z);
+        q3to1.setW(t3to1.transform.rotation.w);
 
         // set h, v, rho
         double h_1 = std::sqrt(t1.transform.translation.x * t1.transform.translation.x + t1.transform.translation.y * t1.transform.translation.y);
@@ -132,9 +141,9 @@ private:
 
 
         // put each data to msg(tether_msgs/msg/TetherCompare.msg)
-        // msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
-        // msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
-        // msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
+        msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
+        msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
+        msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
         for(int i=0; i<3; i++){
             if(i==0){
                 msg_pub.tuav1_1tether.vector.x = tuav1_1tether[i];
@@ -190,7 +199,7 @@ private:
         msg_pub.tuav123_sum_vector.header.frame_id = "uav1";
 
 
-        RCLCPP_INFO(this->get_logger(),"q2to1-> x:%f, y:%f, z:%f, w:%f", q2to1.x(), q2to1.y(), q2to1.z(), q2to1.w());
+        // RCLCPP_INFO(this->get_logger(),"q2to1-> x:%f, y:%f, z:%f, w:%f", q2to1.x(), q2to1.y(), q2to1.z(), q2to1.w());
         publisher_->publish(msg_pub);
 
         return;

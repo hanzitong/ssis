@@ -47,10 +47,7 @@ public:
 private:
     void callback_subscribe_tether(const tether_msgs::msg::TetherCompare &msg_sub)
     {
-        // tether1 pattern
-        nav_msgs::msg::Path path1;
-        path1.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
-
+        
         // get catenary num frrm tether_msg, h(uav_position from each winch)
         double h1 = msg_sub.h1;
         double h2 = msg_sub.h2;
@@ -65,54 +62,84 @@ private:
         double c2_3tether = msg_sub.c2_3tether;
         double c3_3tether = msg_sub.c3_3tether;
 
-        // calculate x_uav, x_winch (need, h, v, c, val_for_contain_res uav,winth)
-        double x_uav1 = 0.0, x_winch1 = 0.0;
-        // smart_tether::calc_x_positions(h1, v1, c1_1tether, x_winch1, x_uav1);
-        smart_tether::calc_x_positions(h1, 0., c1_1tether, x_winch1, x_uav1);
+        // tether1 pattern
+        nav_msgs::msg::Path path1_1tether;
+        path1_1tether.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
+        make_path(h1, v1, c1_1tether, path1_1tether, msg_sub.tuav1_1tether.header.frame_id);
+        // double x_uav1 = 0.0, x_winch1 = 0.0;
+        // smart_tether::calc_x_positions(h1, 0., c1_1tether, x_winch1, x_uav1);
+        // double interval = h1 / 100.;
+        // for (int i = 0; i < 100; i++)
+        // {
+        //     double x = x_winch1 + i * interval;
+        //     double z = smart_tether::catenary(x, c1_1tether);
+        //     geometry_msgs::msg::PoseStamped pose;
+        //     pose.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
+        //     pose.pose.position.y = 0.;
+        //     pose.pose.position.x = x - x_uav1;
+        //     pose.pose.position.z = z - smart_tether::catenary(x_uav1, c1_1tether);
+        //     path1.poses.push_back(pose);
+        // }
 
+
+        // tether2 pattern
+        nav_msgs::msg::Path path1_2tether;
+        path1_2tether.header.frame_id = msg_sub.tuav1_2tether.header.frame_id;
+        make_path(h1, v1, c1_2tether, path1_2tether, msg_sub.tuav1_2tether.header.frame_id);
+
+        nav_msgs::msg::Path path2_2tether;
+        path2_2tether.header.frame_id = msg_sub.tuav2_2tether.header.frame_id;
+        make_path(h2, v2, c2_2tether, path2_2tether, msg_sub.tuav2_2tether.header.frame_id);
+
+
+        // tether3 pattern
+        nav_msgs::msg::Path path1_3tether;
+        path1_3tether.header.frame_id = msg_sub.tuav1_3tether.header.frame_id;
+        make_path(h1, v1, c1_3tether, path1_3tether, msg_sub.tuav1_3tether.header.frame_id);
+
+        nav_msgs::msg::Path path2_3tether;
+        path2_3tether.header.frame_id = msg_sub.tuav2_3tether.header.frame_id;
+        make_path(h2, v2, c2_3tether, path2_3tether, msg_sub.tuav2_3tether.header.frame_id);
+
+        nav_msgs::msg::Path path3_3tether;
+        path3_3tether.header.frame_id = msg_sub.tuav3_3tether.header.frame_id;
+        make_path(h3, v3, c3_3tether, path3_3tether, msg_sub.tuav3_3tether.header.frame_id);
+
+
+        this -> publisher1_ -> publish(path1_1tether);
+        this -> publisher2_ -> publish(path1_2tether);
+        this -> publisher3_ -> publish(path2_2tether);
+        this -> publisher4_ -> publish(path1_3tether);
+        this -> publisher5_ -> publish(path2_3tether);
+        this -> publisher6_ -> publish(path3_3tether);
+
+    }
+
+    void make_path(double h, double v, double catenary_num, nav_msgs::msg::Path &path, std::string frame_id)
+    {
+        // calculate x_uav, x_winch (need, h, v, c, val_for_contain_res uav,winth)
+        double x_uav = 0.0, x_winch = 0.0;
+        // smart_tether::calc_x_positions(h1, v1, catenary_num, x_winch1, x_uav1);
+        smart_tether::calc_x_positions(h, v, catenary_num, x_winch, x_uav);
         // calc h/100 = point interval 
-        double interval = h1 / 100.;
+        double interval = h / 100.;
 
         for (int i = 0; i < 100; i++)
         {
             // calc each x using point interval: i * interval
-            double x = x_winch1 + i * interval;
+            double x = x_winch + i * interval;
             // calc each z using catenary function
-            double z = smart_tether::catenary(x, c1_1tether);
-
+            double z = smart_tether::catenary(x, catenary_num);
             geometry_msgs::msg::PoseStamped pose;
-            pose.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
-
+            pose.header.frame_id = frame_id;
             pose.pose.position.y = 0.;
-            // tralslation for each x and y
-            pose.pose.position.x = x - x_uav1;
-            pose.pose.position.z = z - smart_tether::catenary(x_uav1, c1_1tether);
-            // pose.pose.position.x = x;
-            // pose.pose.position.z = z;
+            pose.pose.position.x = x - x_uav;
+            pose.pose.position.z = z - smart_tether::catenary(x_uav, catenary_num);
 
-            path1.poses.push_back(pose);
+            path.poses.push_back(pose);
         }
 
-
-
-        // tether2 pattern
-
-
-
-
-        // tether3 pattern
-
-
-
-
-
-        this -> publisher1_ -> publish(path1);
-        // this -> publisher2_ -> publish(path2);
-        // this -> publisher3_ -> publish(path3);
-        // this -> publisher4_ -> publish(path4);
-        // this -> publisher5_ -> publish(path5);
-        // this -> publisher6_ -> publish(path6);
-
+        return;
     }
 
     rclcpp::Subscription<tether_msgs::msg::TetherCompare>::SharedPtr subscription_;

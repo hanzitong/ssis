@@ -12,10 +12,10 @@ using namespace std::chrono_literals;
 
 class UavPositionPublisher : public rclcpp::Node{
 public:
-    UavPositionPublisher() : Node("uav_position_publisher"), x(0.), y(0.), L(50.), interval(10.){
+    UavPositionPublisher() : Node("uav_position_publisher"), x(0.), y(0.), L(50.), interval(1.){
         publisher_ = this->create_publisher<geometry_msgs::msg::Pose>("winch1/uav_pose", 10);
         // timer_ = this->create_wall_timer(500ms, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
-        timer_ = this->create_wall_timer(2s, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
+        timer_ = this->create_wall_timer(0.6s, std::bind(&UavPositionPublisher::callback_pub_uav_posision, this));
     }
 private:
     void callback_pub_uav_posision(){
@@ -48,19 +48,22 @@ private:
         // message.orientation.z = 0.;
         // message.orientation.w = 1.;
 
-        // RCLCPP_INFO(this->get_logger(), "Publishing uav position x:%f, y:%f", message.position.x, message.position.y);
+        RCLCPP_INFO(this->get_logger(), "Publishing uav position x:%f, y:%f", message.position.x, message.position.y);
         publisher_->publish(message);
     }
+
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr publisher_;
     double x, y, L, interval;
 };
+
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<UavPositionPublisher>());
   rclcpp::shutdown();
+
   return 0;
 }
 
