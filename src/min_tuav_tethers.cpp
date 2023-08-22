@@ -22,8 +22,7 @@
 
 using namespace std::chrono_literals;
 
-// #define RHO_VALUE 0.045
-#define RHO_VALUE 0.0225
+#define RHO_VALUE 0.045
 #define S_MARGIN 0.5
 #define V_MARGIN 20.
 
@@ -100,8 +99,8 @@ private:
         std::vector<double> h_123 = {h_1, h_2, h_3};
         std::vector<double> v_12= {v_1, v_2};
         std::vector<double> v_123 = {v_1, v_2, v_3};
-        std::vector<double> rho_12 = {RHO_VALUE, RHO_VALUE};
-        std::vector<double> rho_123 = {RHO_VALUE, RHO_VALUE, RHO_VALUE};
+        std::vector<double> rho_12 = {RHO_VALUE/2., RHO_VALUE/2.};
+        std::vector<double> rho_123 = {RHO_VALUE/3., RHO_VALUE/3., RHO_VALUE/3.};
 
         // calc c_upper
         double c_upper_1 = smart_tether::calc_c_upper(h_1, v_1, S_MARGIN);
