@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/exceptions.h>
@@ -24,13 +25,13 @@ using namespace std::chrono_literals;
 
 #define RHO_VALUE 0.045
 #define S_MARGIN 0.5
-#define V_MARGIN 20.
+#define V_MARGIN 70.
 
 
 
-class MinTuav1tether : public rclcpp::Node{
+class MinTuavTether : public rclcpp::Node{
 public:
-    MinTuav1tether() : Node("min_tuav_1tether")//, c_opt_{0.}, c_upper_{0.}, c_lower_{0.}
+    MinTuavTether() : Node("min_tuav_tether")//, c_opt_{0.}, c_upper_{0.}, c_lower_{0.}
     {
         tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -38,25 +39,39 @@ public:
         publisher_ = this->create_publisher<tether_msgs::msg::TetherCompare>("optimize_results", 1);
 
         // should use subscription ?????
-        timer_ = this->create_wall_timer(0.4s, std::bind(&MinTuav1tether::on_timer, this));
+        timer_ = this->create_wall_timer(0.4s, std::bind(&MinTuavTether::on_timer, this));
+
+        // subscription = this -> ccreate_subscription<geometry_msgs::msg::Pose>(
+        //     "winch1/uav_pose", 10, std::bind(&MinTuavTether::on_subscription, this, std::placeholders::_1)
+        // );
     }
 
 private:
     void on_timer(){
-        // RCLCPP_INFO(this->get_logger(),"call on_timer()");
+        // decralations of tf2::Vector3 for plotting 
+        tf2::Vector3 tuav1_1tether = {0., 0., 0.};     // 1
+        // tf2::Vector3 tuav1_1tether_winch2 = {0., 0., 0.};     // 1
+        tf2::Vector3 tuav1_1tether_winch3 = {0., 0., 0.};     // 1
+        tf2::Vector3 tuav1_2tethers = {0., 0., 0.};     // 2
+        tf2::Vector3 tuav2_2tethers = {0., 0., 0.};     // 2
+        tf2::Vector3 tuav1_3tethers = {0., 0., 0.};     // 3
+        tf2::Vector3 tuav2_3tethers = {0., 0., 0.};     // 3
+        tf2::Vector3 tuav3_3tethers = {0., 0., 0.};     // 3
+        tf2::Vector3 tuav_sum_2tethers = {0., 0., 0.};     // 2 sum
+        tf2::Vector3 tuav_sum_3tethers = {0., 0., 0.};     // 3 sum
+
+       // RCLCPP_INFO(this->get_logger(),"call on_timer()");
         geometry_msgs::msg::TransformStamped t1;
         geometry_msgs::msg::TransformStamped t2;
         geometry_msgs::msg::TransformStamped t3;
         geometry_msgs::msg::TransformStamped t2to1;
         geometry_msgs::msg::TransformStamped t3to1;
-
         tether_msgs::msg::TetherCompare msg_pub;
 
         try{
             t1 = tf_buffer_->lookupTransform("winch1", "uav1", tf2::TimePointZero);
             t2 = tf_buffer_->lookupTransform("winch2", "uav1", tf2::TimePointZero);
             t3 = tf_buffer_->lookupTransform("winch3", "uav1", tf2::TimePointZero);
-
             t2to1 = tf_buffer_->lookupTransform("uav1", "uav2", tf2::TimePointZero);
             t3to1 = tf_buffer_->lookupTransform("uav1", "uav3", tf2::TimePointZero);
 
@@ -103,46 +118,44 @@ private:
         std::vector<double> rho_123 = {RHO_VALUE/3., RHO_VALUE/3., RHO_VALUE/3.};
 
         // calc c_upper
-        double c_upper_1 = smart_tether::calc_c_upper(h_1, v_1, S_MARGIN);
-        double c_upper_2 = smart_tether::calc_c_upper(h_2, v_2, S_MARGIN);
-        double c_upper_3 = smart_tether::calc_c_upper(h_3, v_3, S_MARGIN);
-        std::vector<double> c_upper_12{c_upper_1, c_upper_2};
-        std::vector<double> c_upper_123{c_upper_1, c_upper_2, c_upper_3};
+        // RCLCPP_INFO(this->get_logger(), "start calculate c_upper, c_lower");
+        double val_c_upper_1 = smart_tether::calc_c_upper(h_1, v_1, S_MARGIN);
+        double val_c_upper_2 = smart_tether::calc_c_upper(h_2, v_2, S_MARGIN);
+        double val_c_upper_3 = smart_tether::calc_c_upper(h_3, v_3, S_MARGIN);
+        std::vector<double> c_upper_1{val_c_upper_1};
+        std::vector<double> c_upper_12{val_c_upper_1, val_c_upper_2};
+        std::vector<double> c_upper_123{val_c_upper_1, val_c_upper_2, val_c_upper_3};
 
         // calc c_lower
-        double c_lower_1 = smart_tether::calc_c_lower(h_1, v_1, V_MARGIN);
-        double c_lower_2 = smart_tether::calc_c_lower(h_2, v_2, V_MARGIN);
-        double c_lower_3 = smart_tether::calc_c_lower(h_3, v_3, V_MARGIN);
-        std::vector<double> c_lower_12 = {c_lower_1, c_lower_2};
-        std::vector<double> c_lower_123 = {c_lower_1, c_lower_2, c_lower_3};
+        double val_c_lower_1 = smart_tether::calc_c_lower(h_1, v_1, V_MARGIN);
+        double val_c_lower_2 = smart_tether::calc_c_lower(h_2, v_2, V_MARGIN);
+        double val_c_lower_3 = smart_tether::calc_c_lower(h_3, v_3, V_MARGIN);
+        std::vector<double> c_lower_1 = {val_c_lower_1};
+        std::vector<double> c_lower_12 = {val_c_lower_1, val_c_lower_2};
+        std::vector<double> c_lower_123 = {val_c_lower_1, val_c_lower_2, val_c_lower_3};
 
-
-        // tf2::Vector3 decralations for plotting 
-        tf2::Vector3 tuav1_1tether = {0., 0., 0.};     // 1
-        tf2::Vector3 tuav1_2tethers = {0., 0., 0.};     // 2
-        tf2::Vector3 tuav2_2tethers = {0., 0., 0.};     // 2
-        tf2::Vector3 tuav1_3tethers = {0., 0., 0.};     // 3
-        tf2::Vector3 tuav2_3tethers = {0., 0., 0.};     // 3
-        tf2::Vector3 tuav3_3tethers = {0., 0., 0.};     // 3
-        tf2::Vector3 tuav_sum_2tethers = {0., 0., 0.};     // 2 sum
-        tf2::Vector3 tuav_sum_3tethers = {0., 0., 0.};     // 3 sum
-
-        // calc tether tension
-        msg_pub.tuav1_sum_norm = smart_tether::optimize_1tether(h_1, v_1, 2. * RHO_VALUE, c_opt1_, tuav1_1tether);
-        msg_pub.tuav12_sum_norm = smart_tether::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1, tuav1_2tethers, tuav2_2tethers, tuav_sum_2tethers);
-        msg_pub.tuav123_sum_norm = smart_tether::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1, tuav1_3tethers, tuav2_3tethers, tuav3_3tethers, tuav_sum_3tethers);
-
-        // compare and put result to msg
-        // std::vector<double> compare_tuav12 = {msg_pub.tuav1_sum_norm, msg_pub.tuav12_sum_norm};
-        // msg_pub.result = compare_func::select_min(compare_tuav12);
-        std::vector<double> compare_tuav123 = {msg_pub.tuav1_sum_norm, msg_pub.tuav12_sum_norm, msg_pub.tuav123_sum_norm};
-        msg_pub.result = compare_func::select_min(compare_tuav123);
-
-
-        // put each data to msg(tether_msgs/msg/TetherCompare.msg)
+        // put uav positions to msg
         msg_pub.uav_pos.x = t1.transform.translation.x;   // get from listener
         msg_pub.uav_pos.y = t1.transform.translation.y;   // get from listener
         msg_pub.uav_pos.z = t1.transform.translation.z;   // get from listener
+ 
+        // exclude unreal bounds
+        if(val_c_upper_1 < val_c_lower_1 || val_c_upper_2 < val_c_lower_2 || val_c_upper_3 < val_c_lower_3){
+            msg_pub.result = -1;
+            RCLCPP_INFO(this->get_logger(), "unreal bounds at x:%f, y:%f, z:%f", msg_pub.uav_pos.x, msg_pub.uav_pos.y, msg_pub.uav_pos.z);
+        }else{
+            msg_pub.tuav1_sum_norm = smart_tether::optimize_1tether(h_1, v_1, RHO_VALUE, c_opt1_, tuav1_1tether, c_upper_1, c_lower_1);
+            msg_pub.tuav12_sum_norm = smart_tether::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1, tuav1_2tethers, tuav2_2tethers, tuav_sum_2tethers, c_upper_12, c_lower_12);
+            msg_pub.tuav123_sum_norm = smart_tether::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1, tuav1_3tethers, tuav2_3tethers, tuav3_3tethers, tuav_sum_3tethers, c_upper_123, c_lower_123);
+
+            std::vector<double> compare_tuav123 = {msg_pub.tuav1_sum_norm, msg_pub.tuav12_sum_norm, msg_pub.tuav123_sum_norm};
+            // std::vector<double> compare_tuav123 = {msg_pub.tuav1_sum_norm, msg_pub.tuav12_sum_norm, msg_pub.tuav123_sum_norm, msg_pub.tuav1_winch2_sum_norm};
+            // TODO: add tuav1_1tether_winch3 for comparing
+            msg_pub.result = compare_func::select_min(compare_tuav123);
+            RCLCPP_INFO(this->get_logger(), "compare result: %d", msg_pub.result);
+        }
+
+        // put each data to msg(tether_msgs/msg/TetherCompare.msg)
         for(int i=0; i<3; i++){
             if(i==0){
                 msg_pub.tuav1_1tether.vector.x = tuav1_1tether[i];
@@ -151,10 +164,15 @@ private:
                 msg_pub.tuav1_3tether.vector.x = tuav1_3tethers[i];
                 msg_pub.tuav2_3tether.vector.x = tuav2_3tethers[i];
                 msg_pub.tuav3_3tether.vector.x = tuav3_3tethers[i];
+
+                // msg_pub.tuav1_1tether_winch2.vector.x = tuav1_1tether_winch2[i];
+                msg_pub.tuav1_1tether_winch3.vector.x = tuav1_1tether_winch3[i];
                 msg_pub.tuav12_sum_vector.vector.x = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.x = tuav_sum_3tethers[i];
-
                 msg_pub.c1_1tether = c_opt1_[i];
+
+                // msg_pub.c1_1tether_winch2 = c_opt2_[i];
+                msg_pub.c1_1tether_winch3 = c_opt3_[i];
                 msg_pub.c1_2tether = c_opt12_[i];
                 msg_pub.c1_3tether = c_opt123_[i];
 
@@ -165,9 +183,13 @@ private:
                 msg_pub.tuav1_3tether.vector.y = tuav1_3tethers[i];
                 msg_pub.tuav2_3tether.vector.y = tuav2_3tethers[i];
                 msg_pub.tuav3_3tether.vector.y = tuav3_3tethers[i];
+
+                // msg_pub.tuav1_1tether_winch2.vector.y = tuav1_1tether_winch2[i];
+                msg_pub.tuav1_1tether_winch3.vector.y = tuav1_1tether_winch3[i];
                 msg_pub.tuav12_sum_vector.vector.y = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.y = tuav_sum_3tethers[i];
 
+                // msg_pub.c1_1tether_winch2 = c_opt2_[i];
                 msg_pub.c2_2tether = c_opt12_[i];
                 msg_pub.c2_3tether = c_opt123_[i];
             
@@ -178,6 +200,10 @@ private:
                 msg_pub.tuav1_3tether.vector.z = tuav1_3tethers[i];
                 msg_pub.tuav2_3tether.vector.z = tuav2_3tethers[i];
                 msg_pub.tuav3_3tether.vector.z = tuav3_3tethers[i];
+                
+                // msg_pub.tuav1_1tether_winch2.vector.z = tuav1_1tether_winch2[i];
+                msg_pub.tuav1_1tether_winch3.vector.z = tuav1_1tether_winch3[i];
+
                 msg_pub.tuav12_sum_vector.vector.z = tuav_sum_2tethers[i];
                 msg_pub.tuav123_sum_vector.vector.z = tuav_sum_3tethers[i];
 
@@ -194,6 +220,10 @@ private:
         msg_pub.tuav1_3tether.header.frame_id = "uav1";
         msg_pub.tuav2_3tether.header.frame_id = "uav2";
         msg_pub.tuav3_3tether.header.frame_id = "uav3";
+
+        // msg_pub.tuav1_1tether_winch2.header.frame_id = "uav2";
+        msg_pub.tuav1_1tether_winch3.header.frame_id = "uav3";
+
         msg_pub.tuav12_sum_vector.header.frame_id = "uav1";
         msg_pub.tuav123_sum_vector.header.frame_id = "uav1";
 
@@ -211,10 +241,16 @@ private:
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
 
     std::vector<double> c_opt1_ = {0.};
+    std::vector<double> c_opt2_ = {0.};
+    std::vector<double> c_opt3_ = {0.};
+
     std::vector<double> c_opt12_ = {0., 0.};
     std::vector<double> c_opt123_ = {0., 0., 0.,};
     tf2::Quaternion q2to1;
     tf2::Quaternion q3to1;
+
+    // std::vector<double> c_opt1_winch2 = {0.};
+    // std::vector<double> c_opt1_winch3 = {0.};
 
     int compare_result;
 };
@@ -223,7 +259,7 @@ private:
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<MinTuav1tether>());
+    rclcpp::spin(std::make_shared<MinTuavTether>());
     rclcpp::shutdown();
     return 0;
 }

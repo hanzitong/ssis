@@ -52,12 +52,12 @@ private:
 
       t.transform.translation.x = msg->position.x;  // msg.position.x
       t.transform.translation.y = msg->position.y;  // msg.position.y
-      t.transform.translation.z = 0.0;
+      t.transform.translation.z = msg->position.z;
       double theta = std::atan2(msg->position.y, msg->position.x);
 
       tf2::Quaternion q;
       q.setRPY(0, 0, theta);   // eular x,y,z
-      t.transform.rotation.x = q.x(); // hennaknngono q wo dainyuu
+      t.transform.rotation.x = q.x();
       t.transform.rotation.y = q.y();
       t.transform.rotation.z = q.z();
       t.transform.rotation.w = q.w();

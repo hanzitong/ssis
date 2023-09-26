@@ -42,6 +42,9 @@ public:
         publisher5_ = this->create_publisher<nav_msgs::msg::Path>("path_shape2_3tether", 10);
         publisher6_ = this->create_publisher<nav_msgs::msg::Path>("path_shape3_3tether", 10);
 
+        publisher7_ = this->create_publisher<nav_msgs::msg::Path>("path_shape2_1tether_winch2", 10);
+        publisher8_ = this->create_publisher<nav_msgs::msg::Path>("path_shape3_1tether_winch3", 10);
+
     }
 
 private:
@@ -56,6 +59,8 @@ private:
         double v2 = msg_sub.v2;
         double v3 = msg_sub.v3;
         double c1_1tether = msg_sub.c1_1tether;
+        double c1_1tether_winch2 = msg_sub.c1_1tether_winch2;
+        double c1_1tether_winch3 = msg_sub.c1_1tether_winch3;
         double c1_2tether = msg_sub.c1_2tether;
         double c2_2tether = msg_sub.c2_2tether;
         double c1_3tether = msg_sub.c1_3tether;
@@ -66,20 +71,16 @@ private:
         nav_msgs::msg::Path path1_1tether;
         path1_1tether.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
         make_path(h1, v1, c1_1tether, path1_1tether, msg_sub.tuav1_1tether.header.frame_id);
-        // double x_uav1 = 0.0, x_winch1 = 0.0;
-        // smart_tether::calc_x_positions(h1, 0., c1_1tether, x_winch1, x_uav1);
-        // double interval = h1 / 100.;
-        // for (int i = 0; i < 100; i++)
-        // {
-        //     double x = x_winch1 + i * interval;
-        //     double z = smart_tether::catenary(x, c1_1tether);
-        //     geometry_msgs::msg::PoseStamped pose;
-        //     pose.header.frame_id = msg_sub.tuav1_1tether.header.frame_id;
-        //     pose.pose.position.y = 0.;
-        //     pose.pose.position.x = x - x_uav1;
-        //     pose.pose.position.z = z - smart_tether::catenary(x_uav1, c1_1tether);
-        //     path1.poses.push_back(pose);
-        // }
+
+        // tether1 pattern (from winch2)
+        nav_msgs::msg::Path path1_1tether_winch2;
+        path1_1tether_winch2.header.frame_id = msg_sub.tuav1_1tether_winch2.header.frame_id;
+        make_path(h2, v2, c1_1tether_winch2, path1_1tether_winch2, msg_sub.tuav1_1tether_winch2.header.frame_id);
+
+        // tether1 pattern (from winch3)
+        nav_msgs::msg::Path path1_1tether_winch3;
+        path1_1tether_winch3.header.frame_id = msg_sub.tuav1_1tether_winch3.header.frame_id;
+        make_path(h3, v3, c1_1tether_winch3, path1_1tether_winch3, msg_sub.tuav1_1tether_winch3.header.frame_id);
 
 
         // tether2 pattern
@@ -112,6 +113,9 @@ private:
         this -> publisher4_ -> publish(path1_3tether);
         this -> publisher5_ -> publish(path2_3tether);
         this -> publisher6_ -> publish(path3_3tether);
+
+        this -> publisher7_ -> publish(path1_1tether_winch2);
+        this -> publisher8_ -> publish(path1_1tether_winch3);
 
     }
 
@@ -150,6 +154,9 @@ private:
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr publisher4_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr publisher5_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr publisher6_;
+
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr publisher7_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr publisher8_;
 
 };
 

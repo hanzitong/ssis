@@ -40,6 +40,9 @@ public:
         publisher7_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav_sum_2tether", 10);
         publisher8_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav_sum_3tether", 10);
 
+        publisher9_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1_1tether_winch2", 10);
+        publisher10_ = this->create_publisher<visualization_msgs::msg::Marker>("marker_tuav1_1tether_winch3", 10);
+
     }
 
 private:
@@ -238,6 +241,52 @@ private:
         msg_pub8.color.b = 1.;
         msg_pub8.color.a = VECTOR_COLOR_A;
 
+        // tether1 pattern (from winch2)
+        visualization_msgs::msg::Marker msg_pub9;
+        msg_pub9.header.frame_id = msg_sub.tuav1_1tether_winch2.header.frame_id;
+        // msg_pub9.header.frame_id = "winch2";
+        msg_pub9.ns = "1tether";
+        msg_pub9.id = 2;
+        msg_pub9.type = visualization_msgs::msg::Marker::ARROW;
+        msg_pub9.action = visualization_msgs::msg::Marker::ADD;
+        msg_pub9.points.resize(2);
+        msg_pub9.points[0].x = 0.;
+        msg_pub9.points[0].y = 0.;
+        msg_pub9.points[0].z = 0.;
+        msg_pub9.points[1].x = msg_sub.tuav1_1tether_winch2.vector.x;
+        msg_pub9.points[1].y = msg_sub.tuav1_1tether_winch2.vector.y;
+        msg_pub9.points[1].z = msg_sub.tuav1_1tether_winch2.vector.z;
+        msg_pub9.scale.x = VECTOR_SCALE_X;
+        msg_pub9.scale.y = VECTOR_SCALE_Y;
+        msg_pub9.scale.z = VECTOR_SCALE_Z;
+        msg_pub9.color.r = VECTOR_COLOR_R;
+        msg_pub9.color.g = VECTOR_COLOR_G;
+        msg_pub9.color.b = VECTOR_COLOR_B;
+        msg_pub9.color.a = VECTOR_COLOR_A;
+
+        // // tether1 pattern (from winch3)
+        visualization_msgs::msg::Marker msg_pub10;
+        msg_pub10.header.frame_id = msg_sub.tuav1_1tether_winch3.header.frame_id;
+        msg_pub10.ns = "1tether";
+        msg_pub10.id = 3;
+        msg_pub10.type = visualization_msgs::msg::Marker::ARROW;
+        msg_pub10.action = visualization_msgs::msg::Marker::ADD;
+        msg_pub10.points.resize(2);
+        msg_pub10.points[0].x = 0.;
+        msg_pub10.points[0].y = 0.;
+        msg_pub10.points[0].z = 0.;
+        msg_pub10.points[1].x = msg_sub.tuav1_1tether_winch3.vector.x;
+        msg_pub10.points[1].y = msg_sub.tuav1_1tether_winch3.vector.y;
+        msg_pub10.points[1].z = msg_sub.tuav1_1tether_winch3.vector.z;
+        msg_pub10.scale.x = VECTOR_SCALE_X;
+        msg_pub10.scale.y = VECTOR_SCALE_Y;
+        msg_pub10.scale.z = VECTOR_SCALE_Z;
+        msg_pub10.color.r = VECTOR_COLOR_R;
+        msg_pub10.color.g = VECTOR_COLOR_G;
+        msg_pub10.color.b = VECTOR_COLOR_B;
+        msg_pub10.color.a = VECTOR_COLOR_A;
+
+
 
         this -> publisher_uav_ -> publish(uav_marker);
         this -> publisher1_ -> publish(msg_pub1);
@@ -248,6 +297,9 @@ private:
         this -> publisher6_ -> publish(msg_pub6);
         this -> publisher7_ -> publish(msg_pub7);
         this -> publisher8_ -> publish(msg_pub8);
+
+        this -> publisher9_ -> publish(msg_pub9);
+        this -> publisher10_ -> publish(msg_pub10);
 
     }
 
@@ -262,6 +314,9 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher6_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher7_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher8_;
+
+    rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher9_;
+    rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr publisher10_;
 
 };
 
