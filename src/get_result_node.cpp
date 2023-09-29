@@ -51,15 +51,15 @@ private:
         int pos_x = static_cast<int>(msg.uav_pos.x);
         int pos_y = static_cast<int>(msg.uav_pos.y);
         int pos_z = static_cast<int>(msg.uav_pos.z);
-        int culum_z = pos_z + 25;
-        // result_mesh[culum_z][pos_x] = msg.result;   // result_mesh need to be flipped
-        result_mesh[pos_y][pos_x] = msg.result;   // result_mesh need to be flipped
+        int culum_z = pos_z + 25;   // offset
+        result_mesh[culum_z][pos_x] = msg.result;   // result_mesh need to be flipped
+        // result_mesh[pos_y][pos_x] = msg.result;   // result_mesh need to be flipped
 
-        if(pos_x == 50 && pos_y == 50){
+        if(pos_x >= 50 && pos_y >= 50){
             writeArrayToFile(result_mesh, "output.txt");
             RCLCPP_INFO(this->get_logger(), "made output.txt");
         }
-        if(pos_x == 50 && pos_z == 25){
+        if(pos_x >= 50 && pos_z >= 25){
             writeArrayToFile(result_mesh, "output.txt");
             RCLCPP_INFO(this->get_logger(), "made output.txt");
         }

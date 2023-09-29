@@ -25,8 +25,7 @@ using namespace std::chrono_literals;
 
 #define RHO_VALUE 0.045
 #define S_MARGIN 0.5
-#define V_MARGIN 70.
-
+#define V_MARGIN 50.    // 50m at explanatry article ?
 
 
 class MinTuavTether : public rclcpp::Node{
@@ -37,17 +36,17 @@ public:
         tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
         publisher_ = this->create_publisher<tether_msgs::msg::TetherCompare>("optimize_results", 1);
+        // timer_ = this->create_wall_timer(0.4s, std::bind(&MinTuavTether::on_timer, this));
 
         // should use subscription ?????
-        timer_ = this->create_wall_timer(0.4s, std::bind(&MinTuavTether::on_timer, this));
-
-        // subscription = this -> ccreate_subscription<geometry_msgs::msg::Pose>(
-        //     "winch1/uav_pose", 10, std::bind(&MinTuavTether::on_subscription, this, std::placeholders::_1)
-        // );
+        subscription_ = this-> create_subscription<geometry_msgs::msg::Pose>(
+            "winch1/uav_pose", 10, std::bind(&MinTuavTether::subscription_callback, this, std::placeholders::_1)
+        );
     }
 
 private:
-    void on_timer(){
+    // void on_timer(){
+    void subscription_callback(const geometry_msgs::msg::Pose &msg) {
         // decralations of tf2::Vector3 for plotting 
         tf2::Vector3 tuav1_1tether = {0., 0., 0.};     // 1
         // tf2::Vector3 tuav1_1tether_winch2 = {0., 0., 0.};     // 1
@@ -123,6 +122,7 @@ private:
         double val_c_upper_2 = smart_tether::calc_c_upper(h_2, v_2, S_MARGIN);
         double val_c_upper_3 = smart_tether::calc_c_upper(h_3, v_3, S_MARGIN);
         std::vector<double> c_upper_1{val_c_upper_1};
+        // std::vector<double> c_upper_2{val_c_upper_2};
         std::vector<double> c_upper_12{val_c_upper_1, val_c_upper_2};
         std::vector<double> c_upper_123{val_c_upper_1, val_c_upper_2, val_c_upper_3};
 
@@ -131,6 +131,7 @@ private:
         double val_c_lower_2 = smart_tether::calc_c_lower(h_2, v_2, V_MARGIN);
         double val_c_lower_3 = smart_tether::calc_c_lower(h_3, v_3, V_MARGIN);
         std::vector<double> c_lower_1 = {val_c_lower_1};
+        // std::vector<double> c_lower_2 = {val_c_lower_2};
         std::vector<double> c_lower_12 = {val_c_lower_1, val_c_lower_2};
         std::vector<double> c_lower_123 = {val_c_lower_1, val_c_lower_2, val_c_lower_3};
 
@@ -145,6 +146,7 @@ private:
             RCLCPP_INFO(this->get_logger(), "unreal bounds at x:%f, y:%f, z:%f", msg_pub.uav_pos.x, msg_pub.uav_pos.y, msg_pub.uav_pos.z);
         }else{
             msg_pub.tuav1_sum_norm = smart_tether::optimize_1tether(h_1, v_1, RHO_VALUE, c_opt1_, tuav1_1tether, c_upper_1, c_lower_1);
+            // msg_pub.tuav1_winch2_sum_norm = smart_tether::optimize_1tether(h_2, v_2, RHO_VALUE, c_opt1_, tuav1_1tether, c_upper_2, c_lower_2);
             msg_pub.tuav12_sum_norm = smart_tether::optimize_2tethers(h_12, v_12, rho_12, c_opt12_, q2to1, tuav1_2tethers, tuav2_2tethers, tuav_sum_2tethers, c_upper_12, c_lower_12);
             msg_pub.tuav123_sum_norm = smart_tether::optimize_3tethers(h_123, v_123, rho_123, c_opt123_, q2to1, q3to1, tuav1_3tethers, tuav2_3tethers, tuav3_3tethers, tuav_sum_3tethers, c_upper_123, c_lower_123);
 
