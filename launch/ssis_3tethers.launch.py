@@ -25,7 +25,7 @@ def generate_launch_description():
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            name='pub_winch2_frame',
+            name='pub_winch2_frame'
             arguments = [
                 '--x', str(winch2_pos[0]), '--y', str(winch2_pos[1]), '--z', str(winch2_pos[2]),
                 '--yaw', '0','--pitch', '0', '--roll', '0',
